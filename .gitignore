@@ -1,0 +1,25 @@
+# Ignore all generated CodeSys project files but keep the template
+/project/*.project
+!/project/Template_750_8111.project
+
+# CodeSys IDE-generated user and machine preference files
+# These are created automatically when a project is opened in the IDE
+*.opt
+
+# CodeSys build artifacts and compiler output
+*.crc
+*.dep
+*.o
+*.lnk
+*.map
+*.bak
+*.tmp
+*.log
+*.compileinfo
+/project/*.exports
+/project/*.clean
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
