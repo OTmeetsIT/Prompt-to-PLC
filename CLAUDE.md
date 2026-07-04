@@ -168,38 +168,41 @@ unless the user has explicitly set up a remote and asked for a push (see Phase 1
 2. Use the CodeSys MCP to open `/project/{topic}_v1.project`
 3. Write the contents of `{topic}_declaration.txt` into the **Declaration section** of the main POU
 4. Write the contents of `{topic}_program.txt` into the **Implementation section** of the main POU
-5. Save the project file via the CodeSys MCP
+5. Verify the write: read the POU back with `get_pou_code` and confirm both sections match
+   the text files in `/code/` — if they do not match, rewrite before proceeding
+6. Save the project file via the CodeSys MCP
 
 ---
 
 ### PHASE 7 — Build
 
-The CodeSys MCP's build tool only confirms that compilation was *triggered* — it does not
-return pass/fail status or error text, and CodeSys does not write a build log file the agent
-can read. Build feedback must be relayed manually by the user:
+The CodeSys MCP's `compile_project` tool returns the build result directly: a
+`Build PASSED` / `Build FAILED` status, `BUILD_ERROR:` / `BUILD_WARNING:` lines, and a
+`BUILD_RESULT: N error(s), M warning(s)` summary. No manual relay from the user is needed.
 
-1. Use the CodeSys MCP to initiate a build of `{topic}_v1.project`
-2. Ask the user to check the CodeSys IDE's message pane and paste back what they see: either
-   confirmation that the build passed, or the full list of errors/warnings
-3. Do not assume success — wait for the user's report before proceeding
+1. Use the CodeSys MCP to build `{topic}_v1.project`
+2. Parse the returned `BUILD_RESULT` line for the error and warning counts
+3. Report any warnings to the user even on a passing build — warnings do not block
+   progress, but the user must be made aware of them
 
-- **User reports build PASSES** → proceed to Phase 9
-- **User reports build FAILS** → proceed to Phase 8
+- **0 errors** → proceed to Phase 9
+- **1 or more errors** → proceed to Phase 8
 
 ---
 
 ### PHASE 8 — Error Correction Loop
 
-Repeat until the user reports a passing build or 3 iterations are reached:
+Repeat until the build passes or 3 iterations are reached:
 
-1. Parse the build error output the user pasted back
-2. Identify which file requires correction — declaration, program, or both
-3. Apply the fix to the appropriate text file(s) in `/code/`
-4. Save the corrected file(s) locally
-5. Use the CodeSys MCP to write the corrected content into `{topic}_v1.project`
-6. Initiate a new build via the CodeSys MCP
-7. Ask the user to check the message pane again and paste back the result
-8. Evaluate the new build results and repeat if necessary
+1. Parse the `BUILD_ERROR:` lines returned by `compile_project`
+2. Read the failing POU back with `get_pou_code` — error positions such as
+   `Line 5, Column 1 (Impl)` are line numbers within the Declaration or Implementation
+   section as returned by that tool
+3. Identify which file requires correction — declaration, program, or both
+4. Apply the fix to the appropriate text file(s) in `/code/`
+5. Save the corrected file(s) locally
+6. Use the CodeSys MCP to write the corrected content into `{topic}_v1.project`
+7. Rebuild via `compile_project`, evaluate the returned result, and repeat if necessary
 
 **If 3 iterations are reached without a passing build:**
 - Document all remaining errors clearly
@@ -230,16 +233,18 @@ Present a handoff summary containing:
 1. **Project file location** — `/project/{topic}_v1.project`
 2. **Program summary** — what the program does (derived from the SFR purpose)
 3. **I/O mapping table** — list all input and output variables that require hardware address mapping
-4. **Verification checkpoint** — ask the user to verify the SFR, code, and build result, and
+4. **Build evidence** — the final `BUILD_RESULT` line returned by `compile_project`, plus any
+   warnings that were reported
+5. **Verification checkpoint** — ask the user to verify the SFR, code, and build result, and
    confirm everything is committed locally (`git log`/`git status` should be clean)
-5. **Remote reminder** — this repo is local-only; nothing has been pushed anywhere. If the
+6. **Remote reminder** — this repo is local-only; nothing has been pushed anywhere. If the
    user wants to back it up or collaborate, remind them they can add a remote and push
    whenever they're ready:
    ```bash
    git remote add origin <new-repo-url>
    git push -u origin main
    ```
-6. **Next steps for the user:**
+7. **Next steps for the user:**
    - Open `{topic}_v1.project` in the CodeSys IDE
    - Navigate to the Device Tree
    - Map each I/O variable to its corresponding hardware address
