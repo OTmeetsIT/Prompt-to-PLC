@@ -65,8 +65,13 @@ All file names are derived from the topic provided by the user, lowercase with u
 ### PHASE 1 — Plan
 
 1. Enter **Plan Mode**
-2. Ask the user to describe what they want to build
-3. Based on the user's description, ask clarifying questions to fill in the gaps needed for
+2. Ask the user for a **User Story** — a plain-language description, in their own words, of
+   what they want the program to do (e.g. "As an operator, I want the LED to blink every
+   second so I know the PLC is running"). The topic name provided in Phase 0 is only a label
+   for file naming — it is never a substitute for the User Story. Do not generate any
+   clarifying questions or assumptions about the intended behavior until the user has given
+   this story.
+3. Based on the user's story, ask clarifying questions to fill in the gaps needed for
    an SFR:
    - What inputs and outputs will the PLC program need?
    - What sequences, timers, or states are involved?

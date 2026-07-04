@@ -16,6 +16,7 @@
 *.tmp
 *.log
 *.compileinfo
+*.precompilecache
 /project/*.exports
 /project/*.clean
 
