@@ -65,19 +65,26 @@ All file names are derived from the topic provided by the user, lowercase with u
 ### PHASE 1 — Plan
 
 1. Enter **Plan Mode**
-2. Review the topic and reason through:
+2. Ask the user to describe what they want to build
+3. Based on the user's description, ask clarifying questions to fill in the gaps needed for
+   an SFR:
    - What inputs and outputs will the PLC program need?
    - What sequences, timers, or states are involved?
    - What safety conditions and edge cases should the SFR capture?
    - What IEC 61131-3 data types and function blocks are appropriate?
-3. Produce a written plan summary — do not write any files yet
-4. Present the plan to the user and wait for confirmation before proceeding
+4. Where more than one reasonable implementation approach exists, present the options to the
+   user and let them choose — do not silently pick one
+5. Continue this back-and-forth until there is enough information to build the skeleton and
+   body of a draft SFR
+6. Produce a written plan summary — do not write any files yet
+7. Present the plan to the user and wait for confirmation before proceeding
 
 ---
 
 ### PHASE 2 — Write the SFR
 
-1. Generate the SFR document and write it to `/sfr/{topic}_SFR.md`
+1. Generate a **draft** SFR document from the plan agreed in Phase 1 and write it to
+   `/sfr/{topic}_SFR.md`
 2. The SFR must include the following sections:
 
    - **Purpose** — what the program does and why
@@ -88,8 +95,9 @@ All file names are derived from the topic provided by the user, lowercase with u
    - **Sequence of Operation** — step-by-step logic description
    - **Edge Cases & Safety** — what the program must handle gracefully
 
-3. Present the SFR to the user for review
-4. Wait for user approval before proceeding to Phase 3
+3. Present the draft SFR to the user and work with them iteratively — incorporate feedback
+   and revise the file — until it converges on a final SFR
+4. Wait for the user's explicit approval of the final SFR before proceeding to Phase 3
 
 ---
 
@@ -137,15 +145,15 @@ Before touching the CodeSys project file, perform a structured validation agains
 
 ### PHASE 5 — Git Commit (Pre-Build)
 
-Commit the SFR and generated code files:
+Commit the SFR and generated code files **locally only**:
 
 ```bash
 git add sfr/ code/
 git commit -m "feat({topic}): add SFR and generated ST code"
-git push
 ```
 
-Do not stage or commit anything in `/project/`.
+Do not stage or commit anything in `/project/`. Do not push — this workflow stays local-only
+unless the user has explicitly set up a remote and asked for a push (see Phase 10).
 
 ---
 
@@ -190,17 +198,15 @@ Repeat until build passes or 3 iterations are reached:
 
 ### PHASE 9 — Final Git Commit (Post-Build)
 
-After a passing build, commit any corrected text files:
+After a passing build, commit any corrected text files **locally only** (no push):
 
 ```bash
 # If corrections were made during the error loop:
 git add code/
 git commit -m "fix({topic}): corrections from CodeSys build validation"
-git push
 
 # If the first build passed cleanly:
 git commit -m "build({topic}): code validated, build passing — no corrections needed"
-git push
 ```
 
 ---
@@ -212,7 +218,16 @@ Present a handoff summary containing:
 1. **Project file location** — `/project/{topic}_v1.project`
 2. **Program summary** — what the program does (derived from the SFR purpose)
 3. **I/O mapping table** — list all input and output variables that require hardware address mapping
-4. **Next steps for the user:**
+4. **Verification checkpoint** — ask the user to verify the SFR, code, and build result, and
+   confirm everything is committed locally (`git log`/`git status` should be clean)
+5. **Remote reminder** — this repo is local-only; nothing has been pushed anywhere. If the
+   user wants to back it up or collaborate, remind them they can add a remote and push
+   whenever they're ready:
+   ```bash
+   git remote add origin <new-repo-url>
+   git push -u origin main
+   ```
+6. **Next steps for the user:**
    - Open `{topic}_v1.project` in the CodeSys IDE
    - Navigate to the Device Tree
    - Map each I/O variable to its corresponding hardware address
@@ -239,3 +254,5 @@ Present a handoff summary containing:
 4. **One topic per session** — start a fresh session for each new PLC program
 5. **Never commit `.project` files** — the `.gitignore` enforces this; do not override it
 6. **When in doubt, ask the user** — do not invent requirements or assume hardware details
+7. **Never push automatically** — every commit in this workflow (Phase 5, Phase 9) is local-only;
+   only push if the user has explicitly set up a remote and asked for it

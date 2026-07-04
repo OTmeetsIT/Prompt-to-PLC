@@ -3,11 +3,12 @@
 ## About This Project
 
 This repository is the companion project for **OT Meets IT Episode 3 — Prompt to PLC**,
-demonstrating an AI-assisted PLC development workflow using Claude Code, CodeSys, and GitHub.
+demonstrating an AI-assisted PLC development workflow using Claude Code, CodeSys, and Git.
 
-The workflow takes a plain-language topic, generates a full Software Functional Requirements
-document, produces validated IEC 61131-3 Structured Text code, and writes it into a
-CodeSys project file — all driven by an AI coding agent.
+The workflow takes a plain-language description of what you want to build, collaborates with
+you to produce a Software Functional Requirements document, generates validated IEC 61131-3
+Structured Text code, and writes it into a CodeSys project file — all driven by an AI coding
+agent, entirely on your local machine.
 
 ---
 
@@ -16,33 +17,41 @@ CodeSys project file — all driven by an AI coding agent.
 ### Prerequisites
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) installed
 - CodeSys V3.5 installed with the CodeSys MCP configured
-- Git configured with access to this repository
-- The `Template_750_8111.project` file present in `/project/`
+- Git installed locally
+- The `new-codesys-project` skill installed at `~/.claude/skills/new-codesys-project/`
+  (bootstraps new projects from this template — see "Using This as a Template" below)
 
 ### Getting Started
 
-1. Create a new repository from this template (see "Using This as a Template" below),
-   then clone it:
+1. Create an empty directory named after your new project and `cd` into it:
    ```bash
-   git clone https://github.com/OTmeetsIT/<your-new-repo>.git
-   cd <your-new-repo>
+   mkdir my-new-project && cd my-new-project
    ```
 
-2. Open Claude Code in the project directory:
+2. Start Claude Code there:
    ```bash
    claude
    ```
 
-3. Claude Code will automatically read `CLAUDE.md` and initialize the workflow.
+3. Run the bootstrap skill:
+   ```
+   /new-codesys-project
+   ```
+   This clones this template's files into the current directory and sets it up as a fresh,
+   independent, **local-only** git repo — no GitHub account or remote required.
 
-4. Provide your SFR topic when prompted and let the agent run the workflow.
+4. Claude Code will automatically read the new `CLAUDE.md` and initialize the workflow
+   (Phase 0).
+
+5. Describe what you want to build when asked (Phase 1) and work through the workflow with
+   the agent.
 
 ---
 
 ## Repository Structure
 
 ```
-/<your-new-repo>/
+/my-new-project/
 ├── CLAUDE.md                  ← AI agent workflow instructions (auto-read by Claude Code)
 ├── .gitignore                 ← excludes generated project files and IDE artifacts
 ├── README.md                  ← this file
@@ -55,22 +64,16 @@ CodeSys project file — all driven by an AI coding agent.
 
 ## Using This as a Template
 
-This repo (`Prompt-to-PLC`) is the reusable template. Each new PLC project should live in
-its own repository created from it, rather than being added as another topic here.
-
-1. On GitHub, mark this repo as a template: **Settings → General → Template repository**
-   (check the box). This only needs to be done once.
-2. For each new project, create a fresh repo from the template:
-   - Via the GitHub UI: click **Use this template → Create a new repository** on this repo's page.
-   - Via the CLI: `gh repo create <new-project-name> --template OTmeetsIT/Prompt-to-PLC --clone`
-3. `Template_750_8111.project` and the directory structure come with the new repo automatically.
-4. Clone the new repo and start a Claude Code session there — one topic per repo.
+This repo (`Prompt-to-PLC`) is the reusable template. Each new PLC project gets its own
+independent, local-only git repo bootstrapped from it via the `/new-codesys-project` skill
+(see "Getting Started" above) — no GitHub repo or remote is created, and new projects are
+never added as another topic here.
 
 ### Updating the Template
 
-GitHub template repos are a **one-time copy**, not a linked fork — improvements made here
-(e.g. edits to `CLAUDE.md`) do **not** propagate automatically to repos already created from
-this template. To pull in an update:
+Since a new project's repo is detached from this template at creation time, future
+improvements made here (e.g. edits to `CLAUDE.md`) don't automatically appear in projects
+already bootstrapped from it. To pull in an update:
 
 ```bash
 # from inside an existing project repo
@@ -78,14 +81,25 @@ git remote add template https://github.com/OTmeetsIT/Prompt-to-PLC.git
 git fetch template
 git checkout template/main -- CLAUDE.md README.md
 git commit -m "chore: sync CLAUDE.md/README.md from template"
+git remote remove template
 ```
 
 This pulls specific files from the template's history without merging its unrelated commit
 history or touching your project's `/sfr/`, `/code/`, or `/project/` contents.
 
+### Publishing a Project to GitHub (Optional)
+
+Projects created from this template are local-only by default. If you later want to back a
+project up or collaborate on it, add a remote and push whenever you're ready:
+
+```bash
+git remote add origin <your-new-repo-url>
+git push -u origin main
+```
+
 ---
 
-## What Gets Committed to GitHub
+## What Gets Committed
 
 | File | Committed? |
 |---|---|
