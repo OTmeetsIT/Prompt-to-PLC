@@ -174,25 +174,32 @@ unless the user has explicitly set up a remote and asked for a push (see Phase 1
 
 ### PHASE 7 — Build
 
-1. Use the CodeSys MCP to initiate a build of `{topic}_v1.project`
-2. Capture all build output — errors, warnings, and messages
+The CodeSys MCP's build tool only confirms that compilation was *triggered* — it does not
+return pass/fail status or error text, and CodeSys does not write a build log file the agent
+can read. Build feedback must be relayed manually by the user:
 
-- **Build PASSES** → proceed to Phase 9
-- **Build FAILS** → proceed to Phase 8
+1. Use the CodeSys MCP to initiate a build of `{topic}_v1.project`
+2. Ask the user to check the CodeSys IDE's message pane and paste back what they see: either
+   confirmation that the build passed, or the full list of errors/warnings
+3. Do not assume success — wait for the user's report before proceeding
+
+- **User reports build PASSES** → proceed to Phase 9
+- **User reports build FAILS** → proceed to Phase 8
 
 ---
 
 ### PHASE 8 — Error Correction Loop
 
-Repeat until build passes or 3 iterations are reached:
+Repeat until the user reports a passing build or 3 iterations are reached:
 
-1. Parse the build error output carefully
+1. Parse the build error output the user pasted back
 2. Identify which file requires correction — declaration, program, or both
 3. Apply the fix to the appropriate text file(s) in `/code/`
 4. Save the corrected file(s) locally
 5. Use the CodeSys MCP to write the corrected content into `{topic}_v1.project`
 6. Initiate a new build via the CodeSys MCP
-7. Evaluate the new build results and repeat if necessary
+7. Ask the user to check the message pane again and paste back the result
+8. Evaluate the new build results and repeat if necessary
 
 **If 3 iterations are reached without a passing build:**
 - Document all remaining errors clearly
