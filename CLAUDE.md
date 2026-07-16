@@ -59,19 +59,15 @@ All file names are derived from the topic provided by the user, lowercase with u
 3. Ask the user for the **topic** if not already provided
 4. Confirm `Template_750_8111.project` exists in `/project/`
 5. Confirm Git is initialized and `.gitignore` is in place
-6. **Verify the CodeSys MCP is the required (forked) build.** This workflow depends on two
-   capabilities the stock MCP does not provide: `compile_project` returning structured build
-   results, and a `get_pou_code` tool for reading a POU back. Run a preflight check:
-   - Confirm the `get_pou_code` tool is present in the CodeSys MCP toolset
-   - Open `/project/Template_750_8111.project` and run `compile_project` on it — the response
-     must contain a `BUILD_RESULT: N error(s), M warning(s)` line (the clean template builds
-     `0 error(s), 0 warning(s)`)
+6. **Verify the CodeSys MCP is the required (forked) build.** This workflow depends on the
+   forked MCP's `get_pou_code` tool (for reading a POU back) and its structured
+   `compile_project` build results. Checking that the **`get_pou_code` tool is present in the
+   CodeSys MCP toolset** is sufficient — it is unique to the fork, so no build probe is needed.
 
-   If `get_pou_code` is missing, or `compile_project` returns only a generic "compilation
-   initiated / check CODESYS messages" response with **no** `BUILD_RESULT` line, **stop** —
-   the connected MCP is the stock build, not the forked version this workflow requires.
-   Tell the user to install and point Claude Code at the forked CodeSys MCP
-   (https://github.com/Moses-Ling/codesys-mcp-toolkit.git), and do not proceed to Phase 1.
+   If `get_pou_code` is not present, **stop** — the connected MCP is the stock build, not the
+   forked version this workflow requires. Tell the user to install and point Claude Code at
+   the forked CodeSys MCP (https://github.com/Moses-Ling/codesys-mcp-toolkit.git), and do not
+   proceed to Phase 1.
 
 ---
 
