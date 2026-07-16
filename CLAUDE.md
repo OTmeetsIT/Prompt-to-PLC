@@ -60,9 +60,9 @@ All file names are derived from the topic provided by the user, lowercase with u
 4. Confirm `Template_750_8111.project` exists in `/project/`
 5. Confirm Git is initialized and `.gitignore` is in place
 6. **Verify the CodeSys MCP is the required (forked) build.** This workflow depends on the
-   forked MCP's `get_pou_code` tool (for reading a POU back) and its structured
-   `compile_project` build results. Checking that the **`get_pou_code` tool is present in the
-   CodeSys MCP toolset** is sufficient — it is unique to the fork, so no build probe is needed.
+   forked MCP's `get_pou_code` tool (for reading a POU back). Checking that the **`get_pou_code`
+   tool is present in the CodeSys MCP toolset** is sufficient — it is unique to the fork, so no
+   build probe is needed.
 
    If `get_pou_code` is not present, **stop** — the connected MCP is the stock build, not the
    forked version this workflow requires. Tell the user to install and point Claude Code at
