@@ -16,7 +16,10 @@ agent, entirely on your local machine.
 
 ### Prerequisites
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) installed
-- CodeSys V3.5 installed with the CodeSys MCP configured
+- CodeSys V3.5 installed, with the **forked** CodeSys MCP configured —
+  [codesys-mcp-toolkit](https://github.com/Moses-Ling/codesys-mcp-toolkit.git). The workflow
+  requires its `get_pou_code` tool and structured `compile_project` build results; the stock
+  MCP will fail the Phase 0 preflight check.
 - Git installed locally
 - The `new-codesys-project` skill installed at `~/.claude/skills/new-codesys-project/`
   (bootstraps new projects from this template — see "Using This as a Template" below)
